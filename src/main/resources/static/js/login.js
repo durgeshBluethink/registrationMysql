@@ -23,11 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const result = await response.json();
                     alert(result.message);
                     sessionStorage.setItem('isLoggedIn', 'true');
-                    sessionStorage.setItem('userName', result.fullName);
-                    sessionStorage.setItem('userEmail', result.email);
-                    sessionStorage.setItem('userCity', result.city);
-                    sessionStorage.setItem('userMobile', result.mobileNumber);
-                    sessionStorage.setItem('userReferrer', result.referrer);
+                    sessionStorage.setItem('userId', result.userId); // Store userId
+                    console.log('User ID stored in sessionStorage:', sessionStorage.getItem('userId')); // Log userId
                     window.location.href = 'index.html';
                 } else {
                     const errorData = await response.json();

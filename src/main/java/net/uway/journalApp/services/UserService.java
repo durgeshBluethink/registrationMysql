@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -52,6 +54,18 @@ public class UserService {
             logger.warning("No user found with email: " + email);
         }
         throw new RuntimeException("Invalid credentials");
+    }
+
+    public Map<String, Object> getUserDetails(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Map<String, Object> userDetails = new HashMap<>();
+        userDetails.put("fullName", user.getFullName());
+        userDetails.put("email", user.getEmail());
+        userDetails.put("city", user.getCity());
+        userDetails.put("mobileNumber", user.getMobileNumber());
+        userDetails.put("referrer", user.getReferrer() != null ? user.getReferrer().getFullName() : "No referrer");
+        userDetails.put("paymentStatus", user.isPaymentComplete() ? "Payment Done" : "Payment Pending");
+        return userDetails;
     }
 
 

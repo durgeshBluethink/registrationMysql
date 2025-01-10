@@ -1,0 +1,66 @@
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.text-blue {
+    color: blue;
+}
+
+.container {
+    text-align: center;
+    flex: 1;
+}
+
+#footer {
+    margin-top: auto;
+}
+/* Center the container and form */
+.payment-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    width: 350px; /* Explicit width for the form */
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the input field */
+.payment-form .form-control {
+    width: 100%; /* Use the form's width */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/* Style the button */
+.payment-form .btn-primary {
+    width: 100%; /* Match the input field */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.payment-form .btn-primary:hover {
+    background-color: #0056b3;
+}

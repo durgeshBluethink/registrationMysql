@@ -1,13 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     const paymentForm = document.getElementById('paymentForm');
 
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    const userId = getQueryParam('userId'); // Retrieve userId from URL
+    console.log('userId from URL:', userId); // Log userId for debugging
+
     if (paymentForm) {
         paymentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const amount = document.getElementById('amount').value;
 
             try {
-                const response = await fetch('http://localhost:8090/api/payment/create', {
+                const response = await fetch('http://localhost:8090/api/payment/create?userId=' + userId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -18,12 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     const result = await response.json();
                     const options = {
-                        "key": "rzp_test_AIEfgCrKyUEdo8", // Enter your Razorpay Key ID
-                        "amount": result.amount, // Amount in currency subunits. Default currency is INR.
+                        "key": "rzp_test_AIEfgCrKyUEdo8",
+                        "amount": result.amount,
                         "currency": "INR",
                         "name": "MyApp",
                         "description": "Test Transaction",
-                        "order_id": result.id, // Order ID obtained from backend
+                        "order_id": result.id,
                         "handler": async function (response) {
                             await fetch('http://localhost:8090/api/payment/update', {
                                 method: 'POST',
@@ -36,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     status: 'success'
                                 })
                             });
-                            window.location.href = 'success.html'; // Redirect to success page after successful payment
+                            window.location.href = 'static/success.html';
                         },
                         "prefill": {
                             "name": "Your Name",

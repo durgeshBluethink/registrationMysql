@@ -45,6 +45,7 @@ public class UserController {
             logger.info("Login successful for user: " + user.getEmail());
             Map<String, String> response = new HashMap<>();
             response.put("message", "Login successful");
+            response.put("userId", String.valueOf(user.getId())); // Add user ID to response
             response.put("fullName", user.getFullName());
             response.put("email", user.getEmail());
             response.put("city", user.getCity());
@@ -56,6 +57,17 @@ public class UserController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Login failed: " + e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable Long userId) {
+        try {
+            Map<String, Object> userDetails = userService.getUserDetails(userId);
+            return ResponseEntity.ok(userDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 }

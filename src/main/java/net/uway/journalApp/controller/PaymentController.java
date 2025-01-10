@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
-
 @RestController
 @RequestMapping("/api/payment")
+@CrossOrigin(origins = {"http://localhost:8080", "http://127.0.0.1:8080"})
 public class PaymentController {
 
     private static final Logger logger = Logger.getLogger(PaymentController.class.getName());
@@ -18,11 +18,10 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/create")
-    @CrossOrigin(origins = {"http://localhost:8080", "http://127.0.0.1:8080"})
-    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto) {
-        logger.info("Received payment request: " + paymentDto);
+    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam Long userId) {
+        logger.info("Received payment request: " + paymentDto + " for userId: " + userId);
         try {
-            String paymentResult = paymentService.createPayment(paymentDto);
+            String paymentResult = paymentService.createPayment(paymentDto, userId);
             return ResponseEntity.ok(paymentResult);
         } catch (Exception e) {
             logger.severe("Error during payment processing: " + e.getMessage());
@@ -31,7 +30,6 @@ public class PaymentController {
     }
 
     @PostMapping("/update")
-    @CrossOrigin(origins = {"http://localhost:8080", "http://127.0.0.1:8080"})
     public ResponseEntity<String> updatePayment(@RequestParam String orderId, @RequestParam String paymentId, @RequestParam String status) {
         logger.info("Received payment update request: orderId=" + orderId + ", paymentId=" + paymentId + ", status=" + status);
         try {

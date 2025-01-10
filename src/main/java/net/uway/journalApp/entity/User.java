@@ -3,11 +3,15 @@ package net.uway.journalApp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="user_id")
     private Long id;
 
     private String fullName;
@@ -19,5 +23,13 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "referrer_id")
     private User referrer;
-}
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Payment> payments;
+
+    public boolean isPaymentComplete() {
+        return payments != null && payments.stream().anyMatch(payment -> "completed".equalsIgnoreCase(payment.getStatus()));
+    }
+
+    // Getters and Setters
+}

@@ -31,7 +31,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/api/users/**", "/api/payment/**", "/registration.html", "/login.html", "/forgot-password.html", "/payment.html", "/logout.html", "/about.html", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/api/users/**", "/api/payment/**", "/registration.html", "/login.html", "/forgot-password.html", "/payment.html", "/logout.html", "/profile.html", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated());
         return httpSecurity.build();
     }

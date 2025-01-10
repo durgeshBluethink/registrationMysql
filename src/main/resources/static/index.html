@@ -3,29 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>MyApp</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
-<body class="bg-cover" style="background-image: url('background.jpg');">
+<body>
+<!-- Header -->
 <div id="header"></div>
 
-<div class="container mt-5">
-    <h1 id="welcome-message" class="animate__animated animate__fadeIn text-white">Welcome to MyApp</h1>
-    <p class="animate__animated animate__fadeIn text-white">This is the homepage. You can navigate using the menu.</p>
-    <div class="animate__animated animate__fadeInUp">
-        <img src="header.jpg" class="img-fluid rounded shadow-lg" alt="Responsive image">
+<!-- Main Content -->
+<main class="container mt-5">
+    <h1 class="text-center">Welcome to MyApp</h1>
+    <p class="text-center">Explore the app and enjoy the features.</p>
+    <div class="text-center">
+        <img src="image/header.jpg" alt="Hero Image" class="img-fluid shadow-lg rounded">
     </div>
-</div>
+</main>
 
+<!-- Footer -->
 <div id="footer"></div>
 
+<!-- Scripts -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="header.js"></script>
-<script src="footer.js"></script>
-<script src="index.js"></script>
+<script src="js/header.js"></script>
+<script src="js/footer.js"></script>
 </body>
 </html>

@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
+                    alert(result.message);
                     window.location.href = 'login.html'; // Redirect to login page after successful registration
                 } else {
                     const errorData = await response.text();

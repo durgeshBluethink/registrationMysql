@@ -6,7 +6,7 @@
     <title>Payment</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -14,19 +14,22 @@
 
 <div class="container mt-5">
     <h2 class="animate__animated animate__fadeIn">Payment</h2>
-    <form id="paymentForm">
-        <div class="form-group">
-            <label for="amount">Amount (in INR)</label>
-            <input type="text" class="form-control" id="amount" name="amount" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Pay</button>
-    </form>
+    <div class="payment-container">
+        <form id="paymentForm" class="payment-form">
+            <div class="form-group">
+                <label for="amount">Amount (in INR)</label>
+                <input type="text" class="form-control" id="amount" name="amount" placeholder="Enter amount" required>
+            </div>
+            <input type="hidden" id="userId" value="/* Add logic to set userId here */"> <!-- Hidden userId input field -->
+            <button type="submit" class="btn btn-primary">Pay</button>
+        </form>
+    </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="header.js"></script>
-<script src="payment.js"></script>
-<script src="auth.js"></script> <!-- Ensure auth.js is included -->
+<script src="js/header.js"></script>
+<script src="js/payment.js"></script>
+<script src="js/auth.js"></script> <!-- Ensure auth.js is included -->
 </body>
 </html>

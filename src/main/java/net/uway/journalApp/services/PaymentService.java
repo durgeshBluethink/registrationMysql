@@ -5,7 +5,9 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import net.uway.journalApp.dto.PaymentDto;
 import net.uway.journalApp.entity.Payment;
+import net.uway.journalApp.entity.User;
 import net.uway.journalApp.repository.PaymentRepository;
+import net.uway.journalApp.repository.UserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,19 +20,21 @@ public class PaymentService {
 
     private static final Logger logger = Logger.getLogger(PaymentService.class.getName());
 
+    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
+
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
 
     @Value("${razorpay.key.secret}")
     private String razorpayKeySecret;
 
-    private final PaymentRepository paymentRepository;
-
-    public PaymentService(PaymentRepository paymentRepository) {
+    public PaymentService(UserRepository userRepository, PaymentRepository paymentRepository) {
+        this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
     }
 
-    public String createPayment(PaymentDto paymentDto) {
+    public String createPayment(PaymentDto paymentDto, Long userId) {
         try {
             RazorpayClient client = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
             JSONObject orderRequest = new JSONObject();
@@ -45,6 +49,9 @@ public class PaymentService {
             payment.setAmount(paymentDto.getAmount());
             payment.setStatus("created");
             payment.setCreatedAt(LocalDateTime.now());
+
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            payment.setUser(user); // Associate user with payment
 
             paymentRepository.save(payment);
 
