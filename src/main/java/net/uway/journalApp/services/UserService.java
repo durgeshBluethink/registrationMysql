@@ -57,7 +57,7 @@ public class UserService {
     }
 
     public Map<String, Object> getUserDetails(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.getUserDetailsWithAllData(userId);
         Map<String, Object> userDetails = new HashMap<>();
         userDetails.put("fullName", user.getFullName());
         userDetails.put("email", user.getEmail());
@@ -67,7 +67,6 @@ public class UserService {
         userDetails.put("paymentStatus", user.isPaymentComplete() ? "Payment Done" : "Payment Pending");
         return userDetails;
     }
-
 
     public void sendReferralEmail(String referrerEmail) {
         SimpleMailMessage message = new SimpleMailMessage();

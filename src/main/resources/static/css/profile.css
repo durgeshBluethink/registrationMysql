@@ -4,7 +4,7 @@
     background-color: #f4f4f9;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100vh; /* Ensures the body takes full height of the screen */
 }
 
 .profile-container {
@@ -15,6 +15,7 @@
     text-align: center;
     max-width: 600px;
     margin: 0 auto;
+    flex: 1; /* Makes the container take remaining space, pushing footer down */
 }
 
 .profile-header {
@@ -39,20 +40,46 @@
     font-size: 16px;
 }
 
-.contact-info {
-    margin-top: 30px;
-    color: #444;
+.contact-info-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 999;
 }
 
-.contact-info p {
+.contact-info-panel {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 300px;
+    display: none; /* Initially hidden */
+    z-index: 998;
+}
+
+.contact-info-panel p {
     font-size: 14px;
 }
 
-.profile-footer {
-    background-color: #333;
-    color: #fff;
-    margin-top: auto;
-    font-size: 14px;
+.contact-info-panel .close-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 /* Responsive styling */
@@ -68,9 +95,5 @@
 
     .profile-details p {
         font-size: 14px;
-    }
-
-    .contact-info p {
-        font-size: 12px;
     }
 }

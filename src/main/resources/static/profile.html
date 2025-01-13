@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="css/profile.css">
 </head>
-<body class="bg-cover profile-body" style="background-image: url('background.jpg');">
+<body class="bg-cover profile-body" style="background-image: url('image/background.jpg');">
 <div id="header"></div>
 
 <div class="container mt-5 profile-container">
@@ -17,16 +17,28 @@
     <div id="user-details" class="profile-details animate__animated animate__fadeIn">
         <!-- User details will be dynamically loaded -->
     </div>
-    <div class="contact-info animate__animated animate__fadeIn">
-        <p><strong>Contact Us:</strong> contact@myapp.com</p>
-        <p><strong>Location:</strong> 123 Main Street, City, Country</p>
-    </div>
 </div>
 
+<!-- Floating Button to Show Contact Info -->
+<button class="contact-info-btn" onclick="toggleContactInfoPanel()">Contact</button>
+
+<!-- Contact Info Panel (Initially Hidden) -->
+<div id="contact-info-panel" class="contact-info-panel">
+    <h5>Contact Us</h5>
+    <p><strong>Email:</strong> contact@myapp.com</p>
+    <p><strong>Location:</strong> 123 Main Street, City, Country</p>
+    <p><strong>Phone:</strong> +1 123-456-7890</p>
+    <p><strong>Business Hours:</strong> Mon-Fri, 9:00 AM - 6:00 PM</p>
+    <button class="close-btn" onclick="closeContactInfoPanel()">Close</button>
+</div>
+<div id="footer"></div> <!-- Footer will be loaded here -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="js/header.js"></script>
 <script src="js/footer.js"></script>
 <script src="js/profile.js"></script>
+
+<!-- Link to the new contactInfo.js script -->
+<script src="js/contactInfo.js"></script>
 </body>
 </html>

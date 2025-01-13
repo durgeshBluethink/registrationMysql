@@ -63,7 +63,7 @@ public class PaymentService {
     }
 
     public void updatePayment(String orderId, String paymentId, String status) {
-        Payment payment = paymentRepository.findById(Long.valueOf(orderId)).orElseThrow(() -> new RuntimeException("Payment not found"));
+        Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> new RuntimeException("Payment not found"));
         payment.setPaymentId(paymentId);
         payment.setStatus(status);
 

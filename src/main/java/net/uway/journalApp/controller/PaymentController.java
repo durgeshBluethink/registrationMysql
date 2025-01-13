@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/api/payment")
-@CrossOrigin(origins = {"http://localhost:8080", "http://127.0.0.1:8080"})
+@CrossOrigin(origins = {"http://172.16.2.81:8000", "http://localhost:8090","http://localhost:63342"})
 public class PaymentController {
 
     private static final Logger logger = Logger.getLogger(PaymentController.class.getName());
@@ -40,4 +41,5 @@ public class PaymentController {
             return ResponseEntity.status(500).body("Payment update failed: " + e.getMessage());
         }
     }
+
 }

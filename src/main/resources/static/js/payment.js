@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     status: 'success'
                                 })
                             });
-                            window.location.href = 'static/success.html';
+                            window.location.href = 'success.html';
                         },
                         "prefill": {
                             "name": "Your Name",

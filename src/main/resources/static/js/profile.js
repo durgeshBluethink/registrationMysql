@@ -1,12 +1,24 @@
-const userDetailsDiv = document.getElementById('user-details');
+document.addEventListener('DOMContentLoaded', () => {
+    const userDetailsDiv = document.getElementById('user-details');
 
-if (userDetailsDiv) {
-    const userId = sessionStorage.getItem('userId');
-    console.log('User ID:', userId);
+    if (userDetailsDiv) {
+        const userId = sessionStorage.getItem('userId');
+        console.log('User ID:', userId);
 
-    if (userId) {
-        fetch(`http://localhost:8080/api/users/${userId}`)
-            .then(response => response.json())
+        if (userId) {
+            fetch(`http://localhost:8090/api/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('User Details Response:', data);
                 if (data.error) {
@@ -26,9 +38,10 @@ if (userDetailsDiv) {
                 console.error('Error fetching details:', error);
                 userDetailsDiv.innerHTML = `<p>Error fetching details: ${error.message}</p>`;
             });
+        } else {
+            userDetailsDiv.innerHTML = '<p>Please log in to view your details.</p>';
+        }
     } else {
-        userDetailsDiv.innerHTML = '<p>Please log in to view your details.</p>';
+        console.error('Element with id "user-details" not found.');
     }
-} else {
-    console.error('Element with id "user-details" not found.');
-}
+});

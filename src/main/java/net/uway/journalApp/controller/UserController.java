@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http://192.168.0.100:8080", "http://localhost:8080"})
+@CrossOrigin(origins = {"http://localhost:8090","http://localhost:63342","http://172.16.2.81:8000"})
 public class UserController {
 
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
@@ -24,6 +24,7 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
@@ -59,7 +60,6 @@ public class UserController {
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
-
 
     @GetMapping("/{userId}")
     public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable Long userId) {
