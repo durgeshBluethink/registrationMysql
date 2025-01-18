@@ -11,6 +11,6 @@ public class UserDto {
     private String mobileNumber;
     private String city;
     private String password;
-    private String referrerEmail;
-}
+    private String referrerId; // Field to store referrer's Id
+ }
 

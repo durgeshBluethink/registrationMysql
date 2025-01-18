@@ -97,3 +97,14 @@
         font-size: 14px;
     }
 }
+.payment-status {
+    font-weight: bold;
+}
+
+.payment-status.pending {
+    color: red;
+}
+
+.payment-status.done {
+    color: green;
+}

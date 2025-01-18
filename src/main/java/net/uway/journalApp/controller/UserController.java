@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http://localhost:8090","http://localhost:63342","http://172.16.2.81:8000"})
+@CrossOrigin(origins = {"http://localhost:8090", "http://localhost:63342", "http://172.16.2.81:8000"})
 public class UserController {
 
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
@@ -25,16 +27,26 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
-        logger.info("Received registration request: " + userDto);
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserDto userDto) {
+        logger.info("Received registration request for email: " + userDto.getEmail());
         try {
-            userService.registerUser(userDto, passwordEncoder);
-            return ResponseEntity.ok("User registered successfully.");
+            userService.registerUser(userDto);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User registered successfully.");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            logger.warning("Registration failed: " + e.getMessage());
+            e.printStackTrace(); // Log the full stack trace for better diagnostics
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         } catch (Exception e) {
-            logger.severe("Error during registration: " + e.getMessage());
-            return ResponseEntity.status(500).body("Registration failed: " + e.getMessage());
+            logger.severe("Unexpected error during registration: " + e.getMessage());
+            e.printStackTrace(); // Log the full stack trace for better diagnostics
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Registration failed: " + e.getMessage());
+            return ResponseEntity.status(500).body(errorResponse);
         }
     }
 
@@ -62,11 +74,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable UUID userId) {
         try {
             Map<String, Object> userDetails = userService.getUserDetails(userId);
             return ResponseEntity.ok(userDetails);
         } catch (Exception e) {
+            e.printStackTrace(); // Log the full stack trace for better diagnostics
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -34,7 +36,7 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public String createPayment(PaymentDto paymentDto, Long userId) {
+    public String createPayment(PaymentDto paymentDto, UUID userId) { // Change Long to UUID
         try {
             RazorpayClient client = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
             JSONObject orderRequest = new JSONObject();

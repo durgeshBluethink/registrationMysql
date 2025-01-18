@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
 import java.util.logging.Logger;
-
 @RestController
 @RequestMapping("/api/payment")
-@CrossOrigin(origins = {"http://172.16.2.81:8000", "http://localhost:8090","http://localhost:63342"})
+@CrossOrigin(origins = {"http://172.16.2.81:8000", "http://localhost:8090", "http://localhost:63342"})
 public class PaymentController {
 
     private static final Logger logger = Logger.getLogger(PaymentController.class.getName());
@@ -19,7 +19,7 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam Long userId) {
+    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam UUID userId) { // Change Long to UUID
         logger.info("Received payment request: " + paymentDto + " for userId: " + userId);
         try {
             String paymentResult = paymentService.createPayment(paymentDto, userId);
@@ -41,5 +41,4 @@ public class PaymentController {
             return ResponseEntity.status(500).body("Payment update failed: " + e.getMessage());
         }
     }
-
 }

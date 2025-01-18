@@ -1,47 +1,47 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const userDetailsDiv = document.getElementById('user-details');
-
-    if (userDetailsDiv) {
-        const userId = sessionStorage.getItem('userId');
-        console.log('User ID:', userId);
-
-        if (userId) {
-            fetch(`http://localhost:8090/api/users/${userId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('User Details Response:', data);
-                if (data.error) {
-                    userDetailsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-                } else {
-                    userDetailsDiv.innerHTML = `
-                        <p><strong>Name:</strong> ${data.fullName}</p>
-                        <p><strong>Email:</strong> ${data.email}</p>
-                        <p><strong>City:</strong> ${data.city}</p>
-                        <p><strong>Mobile:</strong> ${data.mobileNumber}</p>
-                        <p><strong>Referrer:</strong> ${data.referrer}</p>
-                        <p><strong>Payment Status:</strong> ${data.paymentStatus}</p>
-                    `;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching details:', error);
-                userDetailsDiv.innerHTML = `<p>Error fetching details: ${error.message}</p>`;
-            });
+// Fetch user details and display referral tree
+async function fetchUserDetails(userId) {
+    try {
+        const response = await fetch(`http://localhost:8090/api/users/${userId}`);
+        if (response.ok) {
+            const userDetails = await response.json();
+            displayUserDetails(userDetails);
         } else {
-            userDetailsDiv.innerHTML = '<p>Please log in to view your details.</p>';
+            alert('Failed to fetch user details');
         }
-    } else {
-        console.error('Element with id "user-details" not found.');
+    } catch (error) {
+        alert('An error occurred: ' + error.message);
     }
-});
+}
+
+function displayUserDetails(userDetails) {
+    // Display user details (e.g., fullName, email, city, etc.)
+    document.getElementById('fullName').textContent = userDetails.fullName;
+    document.getElementById('email').textContent = userDetails.email;
+    document.getElementById('city').textContent = userDetails.city;
+    document.getElementById('mobileNumber').textContent = userDetails.mobileNumber;
+    document.getElementById('referrer').textContent = userDetails.referrer;
+    document.getElementById('paymentStatus').textContent = userDetails.paymentStatus;
+
+    // Display referral tree
+    const referralTree = userDetails.referralTree;
+    const referralTreeContainer = document.getElementById('referralTree');
+    displayReferralTree(referralTreeContainer, referralTree);
+}
+
+function displayReferralTree(container, referralTree) {
+    if (referralTree.length === 0) {
+        container.textContent = 'No referrals';
+        return;
+    }
+
+    const ul = document.createElement('ul');
+    referralTree.forEach(referral => {
+        const li = document.createElement('li');
+        li.textContent = `${referral.fullName} (${referral.email}) - ${referral.paymentStatus}`;
+        ul.appendChild(li);
+        if (referral.referrals.length > 0) {
+            displayReferralTree(li, referral.referrals);
+        }
+    });
+    container.appendChild(ul);
+}
