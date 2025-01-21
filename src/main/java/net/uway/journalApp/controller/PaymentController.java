@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.util.logging.Logger;
 @RestController
 @RequestMapping("/api/payment")
-@CrossOrigin(origins = {"http://172.16.2.81:8000", "http://localhost:8090", "http://localhost:63342"})
 public class PaymentController {
 
     private static final Logger logger = Logger.getLogger(PaymentController.class.getName());

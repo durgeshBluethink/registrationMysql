@@ -30,7 +30,7 @@ public class UserService {
 
     @Transactional
     public User registerUser(UserDto userDto) {
-        logger.info("Registering user with email: " + userDto.getEmail());
+
 
         // Check if the email already exists
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
@@ -54,6 +54,7 @@ public class UserService {
             User referrer = userRepository.findByReferralId(userDto.getReferrerId())
                     .orElseThrow(() -> new RuntimeException("Invalid referrer ID"));
             user.setReferrer(referrer);
+            user.setReferrerId(referrer.getReferralId());
             referrer.getReferredUsers().add(user);
         }
 

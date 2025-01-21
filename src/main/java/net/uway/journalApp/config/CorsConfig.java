@@ -10,19 +10,29 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:8090");
-        corsConfiguration.addAllowedOrigin("http://172.16.2.81:8000");
-       // corsConfiguration.addAllowedOrigin("http://192.168.0.100:8080");
-        corsConfiguration.addAllowedOrigin("http://localhost:63342");
-        corsConfiguration.addAllowedOriginPattern("*"); // Allow any origin for testing purposes
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        CorsConfiguration config = new CorsConfiguration();
 
+        // Allow all origins for development
+        config.addAllowedOrigin("http://localhost:8090");
+        config.addAllowedOrigin("http://localhost:63342");
+        config.addAllowedOrigin("http://172.16.2.81:8000");
+
+        // Allow all HTTP methods
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
+
+        // Allow all headers
+        config.addAllowedHeader("*");
+
+        // Allow credentials
+        config.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
 }

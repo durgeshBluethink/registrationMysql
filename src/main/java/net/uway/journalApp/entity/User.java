@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Table(name = "app_user")
 @Data
 @ToString(exclude = {"referrer", "payments"}) // Exclude lazy-loaded properties
 public class User {
@@ -24,18 +25,28 @@ public class User {
     private String mobileNumber;
     private String city;
     private String password;
+
     private String referralId;
 
-    @ManyToOne
-    private User referrer; // User who referred this user
+    private String referrerId;
 
-    @OneToMany(mappedBy = "referrer", cascade = CascadeType.ALL)
+//    @ManyToOne
+//    private User referrer; // User who referred this user
+
+    @ManyToOne
+    @JoinColumn(name = "referrer_user_id") // Foreign key column to link referrer
+    private User referrer;
+
+    @OneToMany(mappedBy = "referrer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> referredUsers = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Payment> payments;
 
+
     public boolean isPaymentComplete() {
-        return payments != null && payments.stream().anyMatch(payment -> "completed".equalsIgnoreCase(payment.getStatus()));
+        return payments != null && payments.stream()
+                .anyMatch(payment -> "completed".equalsIgnoreCase(payment.getStatus()));
     }
 }
