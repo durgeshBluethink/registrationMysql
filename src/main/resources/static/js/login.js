@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
-    const responseMessage = document.getElementById('responseMessage'); // Add this line to get the response message element
+    const responseMessage = document.getElementById('responseMessage');
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -18,7 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     credentials: 'include'
                 });
 
-                const result = await response.json();
+                let result;
+                try {
+                    result = await response.json();
+                } catch (error) {
+                    throw new Error('Failed to parse response');
+                }
 
                 // Handle success or error response
                 if (response.ok) {

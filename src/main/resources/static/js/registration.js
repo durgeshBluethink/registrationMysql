@@ -3,11 +3,11 @@
 // Get the form and response message elements
 const form = document.getElementById('registrationForm');
 const responseMessage = document.getElementById('responseMessage');
-
+console.log;
 // Handle form submission
 form.addEventListener('submit', async (e) => {
     e.preventDefault(); // Prevent default form submission
-
+ console.log;
     // Get form data
     const userDto = {
         fullName: document.getElementById('fullName').value,

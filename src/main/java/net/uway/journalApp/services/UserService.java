@@ -2,14 +2,17 @@ package net.uway.journalApp.services;
 
 import jakarta.transaction.Transactional;
 import net.uway.journalApp.dto.UserDto;
+import net.uway.journalApp.dto.UserDetailsDto;
+import net.uway.journalApp.dto.ReferralDTO;
 import net.uway.journalApp.entity.User;
+import net.uway.journalApp.exception.UserNotFoundException;
 import net.uway.journalApp.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.UUID;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -54,7 +57,7 @@ public class UserService {
             User referrer = userRepository.findByReferralId(userDto.getReferrerId())
                     .orElseThrow(() -> new RuntimeException("Invalid referrer ID"));
             user.setReferrer(referrer);
-            referrer.getReferredUsers().add(user);
+            referrer.getReferredUsers().add(user); // Add the new user to the referrer's list
         }
 
         return userRepository.save(user);
@@ -63,44 +66,14 @@ public class UserService {
     private String generateReferralId() {
         String referralId;
         do {
-            int length = random.nextInt(3) + 3;
+            int length = random.nextInt(3) + 3; // Generate a number between 3 and 5
             StringBuilder referralIdBuilder = new StringBuilder();
             for (int i = 0; i < length; i++) {
-                referralIdBuilder.append(random.nextInt(10));
+                referralIdBuilder.append(random.nextInt(10)); // Append a random digit
             }
             referralId = referralIdBuilder.toString();
-        } while (userRepository.existsByReferralId(referralId));
+        } while (userRepository.existsByReferralId(referralId)); // Ensure the generated ID is unique
         return referralId;
-    }
-
-    public Map<String, Object> getUserDetails(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Map<String, Object> userDetails = new HashMap<>();
-        userDetails.put("fullName", user.getFullName());
-        userDetails.put("email", user.getEmail());
-        userDetails.put("city", user.getCity());
-        userDetails.put("mobileNumber", user.getMobileNumber());
-        userDetails.put("referrer", user.getReferrer() != null ? user.getReferrer().getFullName() : "No referrer");
-        userDetails.put("paymentStatus", user.isPaymentComplete() ? "Payment Done" : "Payment Pending");
-        userDetails.put("referralTree", getReferralTree(user));
-        return userDetails;
-    }
-
-    private List<Map<String, Object>> getReferralTree(User user) {
-        List<Map<String, Object>> referralTree = new ArrayList<>();
-        for (User referral : user.getReferredUsers()) {
-            Map<String, Object> referralDetails = new HashMap<>();
-            referralDetails.put("fullName", referral.getFullName());
-            referralDetails.put("email", referral.getEmail());
-            referralDetails.put("city", referral.getCity());
-            referralDetails.put("mobileNumber", referral.getMobileNumber());
-            referralDetails.put("referrer", referral.getReferrer() != null ? referral.getReferrer().getFullName() : "No referrer");
-            referralDetails.put("paymentStatus", referral.isPaymentComplete() ? "Payment Done" : "Payment Pending");
-            referralDetails.put("referrals", getReferralTree(referral));
-            referralTree.add(referralDetails);
-        }
-        return referralTree;
     }
 
     public User loginUser(String email, String password, PasswordEncoder passwordEncoder) {
@@ -113,10 +86,49 @@ public class UserService {
                 return user;
             } else {
                 logger.warning("Invalid password for user: " + email);
+                throw new RuntimeException("Invalid credentials");
             }
         } else {
             logger.warning("No user found with email: " + email);
+            throw new RuntimeException("Invalid credentials");
         }
-        throw new RuntimeException("Invalid credentials");
+    }
+
+    @Transactional
+    public UserDetailsDto getUserDetails(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        // Fetch related data separately
+        Hibernate.initialize(user.getReferredUsers());
+        Hibernate.initialize(user.getPayments());
+
+        // Create DTO and populate fields
+        UserDetailsDto userDetailsDto = new UserDetailsDto();
+        userDetailsDto.setId(user.getId());
+        userDetailsDto.setFullName(user.getFullName());
+        userDetailsDto.setEmail(user.getEmail());
+        userDetailsDto.setMobileNumber(user.getMobileNumber());
+        userDetailsDto.setCity(user.getCity());
+        userDetailsDto.setReferrer(user.getReferrer() != null ? user.getReferrer().getFullName() : "No referrer");
+        userDetailsDto.setReferrerId(user.getReferrer() != null ? user.getReferrer().getReferralId() : "No referrer ID");
+        userDetailsDto.setReferralId(user.getReferralId());
+        userDetailsDto.setPaymentComplete(user.isPaymentComplete());
+        userDetailsDto.setReferralTree(getReferralTree(user));
+        return userDetailsDto;
+    }
+
+
+    private List<ReferralDTO> getReferralTree(User user) {
+        List<ReferralDTO> referralTree = new ArrayList<>();
+        for (User referral : user.getReferredUsers()) {
+            ReferralDTO referralDTO = new ReferralDTO();
+            referralDTO.setFullName(referral.getFullName());
+            referralDTO.setEmail(referral.getEmail());
+            referralDTO.setPaymentStatus(referral.isPaymentComplete() ? "Payment Done" : "Payment Pending");
+            referralDTO.setReferrals(getReferralTree(referral)); // recursively fetch referrals
+            referralTree.add(referralDTO);
+        }
+        return referralTree;
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 @RestController
 @RequestMapping("/api/payment")
@@ -19,7 +18,7 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam UUID userId) { // Change Long to UUID
+    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam long userId) { // Change Long to UUID
         logger.info("Received payment request: " + paymentDto + " for userId: " + userId);
         try {
             String paymentResult = paymentService.createPayment(paymentDto, userId);
