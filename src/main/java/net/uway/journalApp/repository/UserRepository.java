@@ -13,6 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByReferralId(String referralId);
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.referrer WHERE u.id = :userId")
-    User getUserDetailsWithAllData(UUID userId);
+    User getUserDetailsWithAllData(long userId);
 
 }

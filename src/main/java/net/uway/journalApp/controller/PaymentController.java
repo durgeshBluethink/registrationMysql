@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/api/payment")
 @CrossOrigin(origins = {"http://172.16.2.81:8000", "http://localhost:8090", "http://localhost:63342"})
@@ -17,8 +18,9 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
+    // Endpoint to create a payment
     @PostMapping("/create")
-    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam long userId) { // Change Long to UUID
+    public ResponseEntity<String> createPayment(@RequestBody PaymentDto paymentDto, @RequestParam long userId) {
         logger.info("Received payment request: " + paymentDto + " for userId: " + userId);
         try {
             String paymentResult = paymentService.createPayment(paymentDto, userId);
@@ -29,6 +31,7 @@ public class PaymentController {
         }
     }
 
+    // Endpoint to update the payment status
     @PostMapping("/update")
     public ResponseEntity<String> updatePayment(@RequestParam String orderId, @RequestParam String paymentId, @RequestParam String status) {
         logger.info("Received payment update request: orderId=" + orderId + ", paymentId=" + paymentId + ", status=" + status);

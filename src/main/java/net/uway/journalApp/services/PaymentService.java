@@ -3,8 +3,10 @@ package net.uway.journalApp.services;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import jakarta.transaction.Transactional;
 import net.uway.journalApp.dto.PaymentDto;
 import net.uway.journalApp.entity.Payment;
+import net.uway.journalApp.entity.PaymentStatus;  // Import PaymentStatus enum
 import net.uway.journalApp.entity.User;
 import net.uway.journalApp.repository.PaymentRepository;
 import net.uway.journalApp.repository.UserRepository;
@@ -35,39 +37,54 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public String createPayment(PaymentDto paymentDto, long userId) { // Change Long to UUID
+    // Method to create a payment
+    public String createPayment(PaymentDto paymentDto, long userId) {
+        paymentDto.validateAmount(); // Ensure the amount is valid
+
         try {
             RazorpayClient client = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
             JSONObject orderRequest = new JSONObject();
-            orderRequest.put("amount", paymentDto.getAmount() * 100); // amount in paise
+
+            orderRequest.put("amount", (Object)(paymentDto.getAmount() * 100)); // Convert to paise
             orderRequest.put("currency", "INR");
-            orderRequest.put("receipt", "txn_" + System.currentTimeMillis());
+            orderRequest.put("receipt", "txn_" + System.currentTimeMillis()); // Use this as receiptId
 
             Order order = client.orders.create(orderRequest);
 
             Payment payment = new Payment();
-            payment.setOrderId(order.get("id"));
+            payment.setOrderId(order.get("id")); // Store the Razorpay order ID
             payment.setAmount(paymentDto.getAmount());
-            payment.setStatus("created");
+            payment.setStatus(PaymentStatus.CREATED);  // Set status as CREATED initially
+
+            // Store both the Razorpay paymentId and receiptId
+            payment.setPaymentId(order.get("id")); // Store the payment ID
+            payment.setReceiptId(order.get("receipt")); // Store the receipt ID
             payment.setCreatedAt(LocalDateTime.now());
 
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-            payment.setUser(user); // Associate user with payment
+            payment.setUser(user);
 
             paymentRepository.save(payment);
 
-            return order.toString();
+            return order.toString(); // Return order details for further processing
         } catch (RazorpayException e) {
             logger.severe("Error during payment processing: " + e.getMessage());
             throw new RuntimeException("Payment creation failed", e);
         }
     }
 
+
+    // Method to update the payment status
     public void updatePayment(String orderId, String paymentId, String status) {
         Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> new RuntimeException("Payment not found"));
+        logger.info("Updating payment with Order ID: " + orderId + ", Payment ID: " + paymentId + ", Status: " + status);
+
+        // Set both paymentId and status (converted to PaymentStatus enum)
         payment.setPaymentId(paymentId);
-        payment.setStatus(status);
+        payment.setStatus(PaymentStatus.valueOf(status.toUpperCase()));  // Convert the string status to enum
 
         paymentRepository.save(payment);
     }
+
+
 }

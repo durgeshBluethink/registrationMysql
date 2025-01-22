@@ -11,9 +11,14 @@ public class UserDetailsDto {
     private String email;
     private String mobileNumber;
     private String city;
-    private String referrer; // Full name of the referrer
-    private String referrerId; // Referral ID of the referrer
-    private String referralId; // Referral ID that this user uses to refer others
-    private boolean isPaymentComplete;
+    private String referrer;
+    private String referrerId;
+    private String referralId;
+    private boolean paymentComplete;
+    private String paymentStatus;  // New field for payment status message
+    private String paymentLink;           // New field for payment link
     private List<ReferralDTO> referralTree;
+
+
 }
+

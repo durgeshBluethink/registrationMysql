@@ -2,11 +2,24 @@ package net.uway.journalApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.IOException;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+		ConfigurationPropertiesAutoConfiguration.class,
+		SslAutoConfiguration.class,
+		LifecycleAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class,
+		ApplicationAvailabilityAutoConfiguration.class,
+		ProjectInfoAutoConfiguration.class
+})
 @EnableTransactionManagement
 public class JournalApplication {
 
@@ -17,24 +30,5 @@ public class JournalApplication {
 		//openHomePage();
 	}
 
-//	private static void openHomePage() {
-//		try {
-//			String os = System.getProperty("os.name").toLowerCase();
-//			String url = "http://127.0.0.1:8080/index.html";
-//			if (os.contains("win")) {
-//				// Windows
-//				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-//			} else if (os.contains("mac")) {
-//				// MacOS
-//				Runtime.getRuntime().exec("open " + url);
-//			} else if (os.contains("nix") || os.contains("nux")) {
-//				// Linux/Unix
-//				Runtime.getRuntime().exec("xdg-open " + url);
-//			} else {
-//				System.out.println("Unsupported OS. Please open the URL manually.");
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+
 }

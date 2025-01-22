@@ -1,16 +1,18 @@
 package net.uway.journalApp.dto;
 
+import lombok.Data;
+
+@Data
 public class PaymentDto {
-    private int amount;
+    private Double amount;
 
-    public int getAmount() {
-        return amount;
+
+    // Validate the amount field (must be positive)
+    public void validateAmount() {
+        if (amount == null || amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero.");
+        }
     }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
     @Override
     public String toString() {
         return "PaymentDto{" +

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 @CrossOrigin(origins = {"http://localhost:8090", "http://localhost:63342", "http://172.16.2.81:8000"})
@@ -41,13 +40,13 @@ public class UserController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             logger.warning("Registration failed: " + e.getMessage());
-            e.printStackTrace(); // Log the full stack trace for better diagnostics
+            e.printStackTrace();
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         } catch (Exception e) {
             logger.severe("Unexpected error during registration: " + e.getMessage());
-            e.printStackTrace(); // Log the full stack trace for better diagnostics
+            e.printStackTrace();
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Registration failed: " + e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
@@ -83,13 +82,64 @@ public class UserController {
     public ResponseEntity<?> getUserDetails(@PathVariable long userId) {
         try {
             UserDetailsDto userDetails = userService.getUserDetails(userId);
+            if (!userDetails.isPaymentComplete()) {
+                userDetails.setPaymentStatus("Payment Pending. Please complete your payment.");
+                userDetails.setPaymentLink("/payment/" + userId);
+            } else {
+                userDetails.setPaymentStatus("Payment Done");
+            }
             return ResponseEntity.ok(userDetails);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("User not found"));
+            logger.severe("User not found with ID: " + userId); // Log error for debugging
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("User not found with ID: " + userId));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+            logger.severe("Error while fetching user details for userId: " + userId);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("An unexpected error occurred. Please try again later."));
         }
     }
 
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<?> getUserDetails(@PathVariable long userId) {
+//        try {
+//            UserDetailsDto userDetails = userService.getUserDetails(userId);
+//            return ResponseEntity.ok(userDetails);
+//        } catch (UserNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("User not found"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+//        }
+//    }
+

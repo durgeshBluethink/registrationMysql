@@ -24,6 +24,9 @@ function loadUserActions() {
         paymentNav.querySelector('a').setAttribute('href', 'payment.html?userId=' + userId); // Set userId in the payment link
         console.log('Payment link set to:', 'payment.html?userId=' + userId); // Log payment link for debugging
 
+        const profileNav = document.getElementById('about-nav');
+        profileNav.style.display = 'block';
+
         document.getElementById('logout-nav').style.display = 'block';
         document.getElementById('logout').addEventListener('click', () => {
             sessionStorage.clear();

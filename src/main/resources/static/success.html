@@ -17,6 +17,13 @@
         <h1 class="display-4">Payment Successful!</h1>
         <p class="lead">Thank you for your payment. Your transaction was completed successfully.</p>
         <hr class="my-4">
+        <div id="receiptDetails">
+            <h3>Payment Receipt Details:</h3>
+            <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+            <p><strong>Payment ID:</strong> <span id="paymentId"></span></p>
+            <p><strong>Amount Paid:</strong> INR <span id="amountPaid"></span></p>
+        </div>
+        <hr class="my-4">
         <p>If you have any questions, please contact our support team.</p>
         <a class="btn btn-primary btn-lg" href="index.html" role="button">Go to Home</a>
     </div>
@@ -28,5 +35,23 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="js/header.js"></script>
 <script src="js/footer.js"></script>
+
+<script>
+    // Retrieve payment details from localStorage
+    const paymentDetails = JSON.parse(localStorage.getItem('paymentDetails'));
+    console.log('Retrieved Payment Details:', paymentDetails); // Log the payment details
+
+    // Check if payment details exist and display them
+    if (paymentDetails) {
+        console.log('Payment details found in localStorage');
+        document.getElementById('orderId').innerText = paymentDetails.orderId;
+        document.getElementById('paymentId').innerText = paymentDetails.paymentId;
+        document.getElementById('amountPaid').innerText = paymentDetails.amountPaid;
+    } else {
+        console.error('Payment details not found in localStorage');
+        document.getElementById('receiptDetails').innerHTML = '<p>Error: Payment details not found.</p>';
+    }
+</script>
+
 </body>
 </html>

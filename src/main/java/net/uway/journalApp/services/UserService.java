@@ -4,8 +4,11 @@ import jakarta.transaction.Transactional;
 import net.uway.journalApp.dto.UserDto;
 import net.uway.journalApp.dto.UserDetailsDto;
 import net.uway.journalApp.dto.ReferralDTO;
+import net.uway.journalApp.entity.Payment;
+import net.uway.journalApp.entity.PaymentStatus;
 import net.uway.journalApp.entity.User;
 import net.uway.journalApp.exception.UserNotFoundException;
+import net.uway.journalApp.repository.PaymentRepository;
 import net.uway.journalApp.repository.UserRepository;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +18,24 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
+
     private static final SecureRandom random = new SecureRandom();
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private  final PaymentRepository paymentRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PaymentRepository paymentRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.paymentRepository = paymentRepository;
     }
 
     @Transactional
@@ -96,10 +103,13 @@ public class UserService {
 
     @Transactional
     public UserDetailsDto getUserDetails(long userId) {
+        logger.info("Fetching user details for userId: " + userId);
+
+        // Fetch user and throw UserNotFoundException if not found
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        // Fetch related data separately
+        // Initialize lazy-loaded collections
         Hibernate.initialize(user.getReferredUsers());
         Hibernate.initialize(user.getPayments());
 
@@ -113,22 +123,35 @@ public class UserService {
         userDetailsDto.setReferrer(user.getReferrer() != null ? user.getReferrer().getFullName() : "No referrer");
         userDetailsDto.setReferrerId(user.getReferrer() != null ? user.getReferrer().getReferralId() : "No referrer ID");
         userDetailsDto.setReferralId(user.getReferralId());
-        userDetailsDto.setPaymentComplete(user.isPaymentComplete());
         userDetailsDto.setReferralTree(getReferralTree(user));
+
+        // Handle payment status
+        Payment payment = paymentRepository.findByUserId(userId);  // Retrieve payment info
+        if (payment != null && (PaymentStatus.CREATED == payment.getStatus() || PaymentStatus.SUCCESS == payment.getStatus())) {
+            userDetailsDto.setPaymentStatus("Payment Done");
+        } else {
+            userDetailsDto.setPaymentStatus("Payment Pending. Please complete your payment.");
+            userDetailsDto.setPaymentLink("/payment/" + user.getId());
+        }
+
+        logger.info("Fetched user details: " + userDetailsDto);
         return userDetailsDto;
     }
 
-
     private List<ReferralDTO> getReferralTree(User user) {
-        List<ReferralDTO> referralTree = new ArrayList<>();
-        for (User referral : user.getReferredUsers()) {
-            ReferralDTO referralDTO = new ReferralDTO();
-            referralDTO.setFullName(referral.getFullName());
-            referralDTO.setEmail(referral.getEmail());
-            referralDTO.setPaymentStatus(referral.isPaymentComplete() ? "Payment Done" : "Payment Pending");
-            referralDTO.setReferrals(getReferralTree(referral)); // recursively fetch referrals
-            referralTree.add(referralDTO);
-        }
-        return referralTree;
+        return user.getReferredUsers().stream()
+                .map(referral -> {
+                    ReferralDTO referralDTO = new ReferralDTO();
+                    referralDTO.setFullName(referral.getFullName());
+                    referralDTO.setEmail(referral.getEmail());
+                    referralDTO.setPaymentStatus(referral.isPaymentComplete() ? "Payment Done" : "Payment Pending");
+                    referralDTO.setReferrals(getReferralTree(referral)); // Recursion
+                    return referralDTO;
+                })
+                .collect(Collectors.toList());
     }
+
+
 }
+
+

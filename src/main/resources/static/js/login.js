@@ -1,5 +1,3 @@
-// login.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const responseMessage = document.getElementById('responseMessage');
@@ -29,8 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     responseMessage.innerHTML = `<p style="color: green;">${result.message || 'Login successful!'}</p>`;
                     sessionStorage.setItem('isLoggedIn', 'true');
-                    sessionStorage.setItem('userId', result.userId);
-                    window.location.href = 'index.html'; // Redirect to homepage after successful login
+                    sessionStorage.setItem('userId', result.userId); // Store userId in sessionStorage
+                    console.log('Stored userId in sessionStorage:', result.userId); // Log for debugging
+                    window.location.href = 'index.html'; // Redirect to homepage
                 } else {
                     responseMessage.innerHTML = `<p style="color: red;">Login failed: ${result.message || 'Invalid credentials'}</p>`;
                 }

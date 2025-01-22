@@ -6,7 +6,6 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -38,6 +37,6 @@ public class User {
     private List<Payment> payments;
 
     public boolean isPaymentComplete() {
-        return payments != null && payments.stream().anyMatch(payment -> "completed".equalsIgnoreCase(payment.getStatus()));
+        return payments != null && payments.stream().anyMatch(payment -> "completed".equalsIgnoreCase(String.valueOf(payment.getStatus())));
     }
 }
