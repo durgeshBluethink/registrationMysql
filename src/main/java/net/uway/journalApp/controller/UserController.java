@@ -1,10 +1,14 @@
 package net.uway.journalApp.controller;
 
+import net.uway.journalApp.dto.ErrorResponse;
 import net.uway.journalApp.dto.LoginDto;
 import net.uway.journalApp.dto.UserDto;
+import net.uway.journalApp.dto.UserDetailsDto;
 import net.uway.journalApp.entity.User;
+import net.uway.journalApp.exception.UserNotFoundException;
 import net.uway.journalApp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+@CrossOrigin(origins = {"http://localhost:8090", "http://localhost:63342", "http://172.16.2.81:8000"})
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -63,23 +68,28 @@ public class UserController {
             response.put("city", user.getCity());
             response.put("mobileNumber", user.getMobileNumber());
             response.put("referrer", user.getReferrer() != null ? user.getReferrer().getFullName() : "No referrer");
+            response.put("referrerId", user.getReferrerId()); // Add referrer ID to response
+            response.put("referralId", user.getReferralId()); // Add referral ID to response
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.severe("Error during login: " + e.getMessage());
+        } catch (RuntimeException e) {
+            logger.severe("Login failed: " + e.getMessage());
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Login failed: " + e.getMessage());
-            return ResponseEntity.status(500).body(errorResponse);
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable UUID userId) {
+    public ResponseEntity<?> getUserDetails(@PathVariable long userId) {
         try {
-            Map<String, Object> userDetails = userService.getUserDetails(userId);
+            UserDetailsDto userDetails = userService.getUserDetails(userId);
             return ResponseEntity.ok(userDetails);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("User not found"));
         } catch (Exception e) {
-            e.printStackTrace(); // Log the full stack trace for better diagnostics
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
         }
     }
+
 }

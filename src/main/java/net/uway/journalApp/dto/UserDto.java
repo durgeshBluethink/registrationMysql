@@ -1,7 +1,5 @@
 package net.uway.journalApp.dto;
 
-
-
 import lombok.Data;
 
 @Data
@@ -11,6 +9,5 @@ public class UserDto {
     private String mobileNumber;
     private String city;
     private String password;
-    private String referrerId; // Field to store referrer's Id
- }
-
+    private String referrerId; // Optional field to accept referral information
+}

@@ -14,8 +14,17 @@
 
 <div class="container mt-5 profile-container">
     <h2 class="animate__animated animate__fadeIn profile-header">Your Profile</h2>
+    <div id="message-container"></div> <!-- Container for response messages -->
     <div id="user-details" class="profile-details animate__animated animate__fadeIn">
-        <!-- User details will be dynamically loaded -->
+        <p><strong>Full Name:</strong> <span id="fullName"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>City:</strong> <span id="city"></span></p>
+        <p><strong>Mobile Number:</strong> <span id="mobileNumber"></span></p>
+        <p><strong>Referrer:</strong> <span id="referrer"></span></p>
+        <p><strong>Payment Status:</strong> <span id="paymentStatus"></span></p>
+    </div>
+    <div id="referralTree" class="profile-details animate__animated animate__fadeIn">
+        <!-- Referral tree will be dynamically loaded -->
     </div>
 </div>
 
@@ -37,8 +46,6 @@
 <script src="js/header.js"></script>
 <script src="js/footer.js"></script>
 <script src="js/profile.js"></script>
-
-<!-- Link to the new contactInfo.js script -->
 <script src="js/contactInfo.js"></script>
 </body>
 </html>
