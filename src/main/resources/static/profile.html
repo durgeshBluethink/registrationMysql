@@ -14,16 +14,15 @@
 
 <div class="container mt-5 profile-container">
     <h2 class="animate__animated animate__fadeIn profile-header">Your Profile</h2>
-    <div id="message-container"></div> <!-- Container for response messages -->
-    <div id="user-details" class="profile-details animate__animated animate__fadeIn">
-        <!-- User details will be dynamically populated -->
+    <div id="message-container"></div>
+    <div id="user-details" class="profile-details animate__animated animate__fadeIn"></div>
+    <div class="text-center mt-4">
+        <button class="btn btn-info" id="show-referrals" onclick="toggleReferralDetails()">Show Referral Details</button>
     </div>
-</div>
+    <div id="referral-details" class="referral-details" style="display: none;"></div> </div>
 
-<!-- Floating Button to Show Contact Info -->
 <button class="contact-info-btn" onclick="toggleContactInfoPanel()">Contact</button>
 
-<!-- Contact Info Panel (Initially Hidden) -->
 <div id="contact-info-panel" class="contact-info-panel">
     <h5>Contact Us</h5>
     <p><strong>Email:</strong> contact@myapp.com</p>
@@ -33,14 +32,13 @@
     <button class="close-btn" onclick="closeContactInfoPanel()">Close</button>
 </div>
 
-<div id="footer"></div> <!-- Footer will be loaded here -->
+<div id="footer"></div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="js/profile.js"></script> <!-- External JS for profile logic -->
+<script src="js/profile.js"></script>
 <script src="js/header.js"></script>
 <script src="js/footer.js"></script>
 <script src="js/contactInfo.js"></script>
-
 </body>
 </html>
