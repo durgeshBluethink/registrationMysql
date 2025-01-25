@@ -1,22 +1,20 @@
 package org.uway.NarayanSena.services;
 
 import jakarta.transaction.Transactional;
-
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.uway.NarayanSena.dto.ReferralDTO;
-import org.uway.NarayanSena.dto.UserDetailsDto;
 import org.uway.NarayanSena.dto.UserDto;
-import org.uway.NarayanSena.entity.Payment;
+import org.uway.NarayanSena.dto.UserDetailsDto;
+import org.uway.NarayanSena.dto.ReferralDTO;
+
 import org.uway.NarayanSena.entity.PaymentStatus;
 import org.uway.NarayanSena.entity.User;
 import org.uway.NarayanSena.exception.UserNotFoundException;
 import org.uway.NarayanSena.repository.PaymentRepository;
 import org.uway.NarayanSena.repository.UserRepository;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -26,17 +24,15 @@ public class UserService {
 
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
-    private static final SecureRandom random = new SecureRandom();
-
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final PaymentRepository paymentRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PaymentRepository paymentRepository) {
+    public UserService(UserRepository userRepository, PaymentRepository paymentRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.paymentRepository = paymentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -70,10 +66,10 @@ public class UserService {
     private String generateReferralId() {
         String referralId;
         do {
-            int length = random.nextInt(3) + 3;
+            int length = new Random().nextInt(3) + 3;
             StringBuilder referralIdBuilder = new StringBuilder();
             for (int i = 0; i < length; i++) {
-                referralIdBuilder.append(random.nextInt(10));
+                referralIdBuilder.append(new Random().nextInt(10));
             }
             referralId = referralIdBuilder.toString();
         } while (userRepository.existsByReferralId(referralId));
@@ -119,9 +115,8 @@ public class UserService {
         userDetailsDto.setReferralId(user.getReferralId());
         userDetailsDto.setReferralTree(getReferralTree(user));
 
-        List<Payment> payments = paymentRepository.findPaymentsByUserId(userId);
-        boolean isPaymentComplete = payments.stream()
-                .anyMatch(payment -> PaymentStatus.CREATED == payment.getStatus());
+        boolean isPaymentComplete = user.getPayments().stream()
+                .anyMatch(payment -> payment.getStatus().equals(PaymentStatus.CREATED));
 
         userDetailsDto.setPaymentComplete(isPaymentComplete);
         userDetailsDto.setPaymentStatus(isPaymentComplete ? "Payment Done" : "Payment Pending. Please complete your payment.");
@@ -136,8 +131,10 @@ public class UserService {
                     ReferralDTO referralDTO = new ReferralDTO();
                     referralDTO.setFullName(referral.getFullName());
                     referralDTO.setEmail(referral.getEmail());
-                    referralDTO.setPaymentStatus(referral.getPayments().stream()
-                            .anyMatch(payment -> PaymentStatus.CREATED.equals(payment.getStatus())) ? "Payment Done" : "Payment Pending");                    referralDTO.setReferrals(getReferralTree(referral));
+                    boolean isPaymentComplete = referral.getPayments().stream()
+                            .anyMatch(payment -> payment.getStatus().equals(PaymentStatus.CREATED));
+                    referralDTO.setPaymentStatus(isPaymentComplete ? "Payment Done" : "Payment Pending");
+                    referralDTO.setReferrals(getReferralTree(referral));
                     return referralDTO;
                 })
                 .collect(Collectors.toList());

@@ -44,4 +44,5 @@ public class User {
         return payments != null && !payments.isEmpty() &&
                 payments.stream().anyMatch(payment -> payment.getStatus() == PaymentStatus.SUCCESS);
     }
+
 }

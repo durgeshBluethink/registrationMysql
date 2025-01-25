@@ -2,12 +2,10 @@ let globalUserDetails = null; // Declare a global variable to store user details
 
 document.addEventListener('DOMContentLoaded', () => {
     const userId = getQueryParam('userId') || sessionStorage.getItem('userId');
-
     if (!userId) {
         showMessage('User ID is not set. Please log in.', 'error');
         return;
     }
-
     fetchUserDetails(userId);
 });
 
@@ -32,6 +30,7 @@ async function fetchUserDetails(userId) {
         }
 
         const data = await response.json();
+        console.info("Received User Details:", data); // Use console.info to log response for debugging
         globalUserDetails = data; // Save the user details to the global variable
         displayUserDetails(data);
         showMessage('User details loaded successfully!', 'success');
@@ -47,17 +46,34 @@ function displayUserDetails(userDetails) {
         return;
     }
 
+    console.log("Payment Status:", userDetails.paymentStatus); // Log payment status for debugging
+
+    const paymentLink = userDetails.paymentStatus.includes('Payment Pending')
+        ? `<p><a href="payment.html?userId=${userDetails.id}">Complete Payment</a></p>`
+        : '';
+
+    // Clear existing content and add user details
     userDetailsDiv.innerHTML = `
         <p><strong>Full Name:</strong> ${userDetails.fullName}</p>
         <p><strong>Email:</strong> ${userDetails.email}</p>
         <p><strong>City:</strong> ${userDetails.city}</p>
         <p><strong>Mobile Number:</strong> ${userDetails.mobileNumber}</p>
-        <p><strong>Referred By:</strong> ${userDetails.referrer}</p>
+        <p><strong>Referred by:</strong> ${userDetails.referrer}</p>
         <p><strong>Payment Status:</strong> ${userDetails.paymentStatus}</p>
+        ${paymentLink}
         <p><strong>Referral ID:</strong> ${userDetails.referralId || 'Not Available'}</p>
-        <p><strong>Referrer ID:</strong> ${userDetails.referrerId || 'Not Available'}</p>
         <p><strong>Number of Referrals:</strong> ${userDetails.referralTree.length}</p>
     `;
+
+    // Add the button only once
+    if (!document.getElementById('show-referrals')) {
+        const button = document.createElement('button');
+        button.classList.add('btn', 'btn-info');
+        button.id = 'show-referrals';
+        button.innerText = 'Show Referral Details';
+        button.onclick = toggleReferralDetails;
+        userDetailsDiv.appendChild(button);
+    }
 }
 
 function showMessage(message, type) {
@@ -66,36 +82,37 @@ function showMessage(message, type) {
     setTimeout(() => messageContainer.innerHTML = '', 5000); // Clear message after 5 seconds
 }
 
-function displayReferralTree(container, referralTree) {
-    if (referralTree && referralTree.length > 0) {
-        const list = document.createElement('ol'); // Use ordered list for numbering
-        list.classList.add('referral-tree'); // Add a CSS class for styling
+function displayReferralTree(referralTree) {
+    const referralDetailsDiv = document.getElementById('referral-details');
+    referralDetailsDiv.innerHTML = ''; // Clear previous content
 
-        referralTree.forEach((referral, index) => {
-            const paymentStatus = referral.paymentComplete ? "Payment Done" : "Payment Pending";
+    if (referralTree && referralTree.length > 0) {
+        const list = document.createElement('ul');
+        list.classList.add('referral-tree');
+
+        referralTree.forEach(referral => {
             const listItem = document.createElement('li');
-            listItem.innerHTML = `<span>${index + 1}. ${referral.fullName} (${referral.email}) - ${paymentStatus}</span>`;
+            listItem.innerHTML = `<span>${referral.fullName} - ${referral.paymentStatus}</span>`;
             if (referral.referrals && referral.referrals.length > 0) {
-                const subList = document.createElement('ol'); // Use ordered list for numbering
+                const subList = document.createElement('ul');
                 displayReferralTreeRecursive(subList, referral.referrals);
                 listItem.appendChild(subList);
             }
             list.appendChild(listItem);
         });
 
-        container.appendChild(list);
+        referralDetailsDiv.appendChild(list);
     } else {
-        container.innerHTML = '<p>No referrals available.</p>';
+        referralDetailsDiv.innerHTML = '<p>No referrals available.</p>';
     }
 }
 
 function displayReferralTreeRecursive(container, referralTree) {
-    referralTree.forEach((referral, index) => {
-        const paymentStatus = referral.paymentComplete ? "Payment Done" : "Payment Pending";
+    referralTree.forEach(referral => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `<span>${index + 1}. ${referral.fullName} (${referral.email}) - ${paymentStatus}</span>`;
+        listItem.innerHTML = `<span>${referral.fullName} - ${referral.paymentStatus}</span>`;
         if (referral.referrals && referral.referrals.length > 0) {
-            const subList = document.createElement('ol'); // Use ordered list for numbering
+            const subList = document.createElement('ul');
             displayReferralTreeRecursive(subList, referral.referrals);
             listItem.appendChild(subList);
         }
@@ -104,11 +121,9 @@ function displayReferralTreeRecursive(container, referralTree) {
 }
 
 function toggleReferralDetails() {
-    const referralDetailsDiv = document.getElementById('referral-details');
-    referralDetailsDiv.innerHTML = ''; // Clear previous content
-
     if (globalUserDetails && globalUserDetails.referralTree) {
-        displayReferralTree(referralDetailsDiv, globalUserDetails.referralTree);
+        displayReferralTree(globalUserDetails.referralTree);
+        const referralDetailsDiv = document.getElementById('referral-details');
         referralDetailsDiv.style.display = (referralDetailsDiv.style.display === 'none' || referralDetailsDiv.style.display === '') ? 'block' : 'none';
     } else {
         showMessage('No referral details available.', 'error');
